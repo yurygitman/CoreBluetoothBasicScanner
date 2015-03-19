@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>420473DD-49A0-41D9-9898-3584409C4FD8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>CoreBluetoothBasicScanner</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7FA84E82F86751CB00971D0858CC71D37B568E1E</key>
+		<string>https://github.com/samuraipapa/CoreBluetoothBasicScanner.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>CoreBluetoothBasicScanner.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7FA84E82F86751CB00971D0858CC71D37B568E1E</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/samuraipapa/CoreBluetoothBasicScanner.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7FA84E82F86751CB00971D0858CC71D37B568E1E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7FA84E82F86751CB00971D0858CC71D37B568E1E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CoreBluetoothBasicScanner</string>
+		</dict>
+	</array>
+</dict>
+</plist>
