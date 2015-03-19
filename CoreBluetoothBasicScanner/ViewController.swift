@@ -12,19 +12,21 @@ import CoreBluetooth
 
 class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
 
-    
-    
+    // UI Stuff
+    @IBOutlet weak var progressViewRSSI: UIProgressView!
+    @IBOutlet weak var labelConnectedDevice: UILabel!
+
+    // BLE Stuff
     let myCentralManager = CBCentralManager()
     var peripheralArray = [CBPeripheral]() // create now empty array.
+    var myPeripheral = CBPeripheral()
+    var rssiFloat = 0.0
+    
+    // Adds in Progress View Stuff
+    var myTimer = NSTimer()
     
     
-    
-    var  deviceArray = [String]()
-    
-    // create empty dictionary
-    var counter = 0  //dictionary Coutner
-    
-    
+    // Put CentralManager in the main queue
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         myCentralManager = CBCentralManager(delegate: self, queue: dispatch_get_main_queue())
@@ -36,6 +38,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+    
     }
     
 
@@ -106,10 +109,10 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             peripheralArray.append(peripheral) // add found device to device array to keep a strong reverence to it.
             
             myCentralManager.connectPeripheral(peripheralArray[0], options: nil)  // connect to this found device
+       //     myPeripheral = peripheral
             printToMyTextView("Attempting to Connect to \(peripheral.name)")
         }
     }
-    
     
     
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
@@ -117,9 +120,20 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         peripheral.delegate = self
         peripheral.discoverServices(nil)  // discover services
         printToMyTextView("Scanning For Services")
+
+        labelConnectedDevice.text = peripheral.name
+        
+      //  peripheralArray.append(peripheral)
+
+        
+        //  Start Timer for Signal Strength
+        myTimer = NSTimer.scheduledTimerWithTimeInterval(1.5, target: self, selector: Selector("myTimer1Func"), userInfo: nil, repeats: true)
     }
+
     
-    
+    func centralManager(central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
+        labelConnectedDevice.text = ""
+    }
     
 // Mark   CBPeriperhalManager
 
@@ -155,11 +169,21 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     
     func peripheral(peripheral: CBPeripheral!, didReadRSSI RSSI: NSNumber!, error: NSError!) {
+    
+        println("readRSSI")
+        
         //  reads signal strenght
-        printToMyTextView("\r didReadRSSI: \(RSSI)\r")
+    //    printToMyTextView("\r didReadRSSI: \(RSSI)\r")
+        
+   //     let cleanedProgValue = RSSI.floatValue  *  0.001  // converts -0 to -100 to
+        
+    //    printToMyTextView("RSSI: \(RSSI) cleanedProgValue: \(cleanedProgValue)")
     
     }
 
+    func peripheralDidUpdateRSSI(peripheral: CBPeripheral!, error: NSError!) {
+        println("didUpdateRSSI")
+    }
     
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
@@ -177,6 +201,8 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         println("MyData: \(myData)\r")
         printToMyTextView("MyData: \(myData)\r")
 
+    //    let cleanedProgValue = peripheral.RSSI.floatValue  *  0.001  // converts -0 to -100 to
+     //   progressViewRSSI.progress = cleanedProgValue
         
         //  Low-level parsing of data (currently not working)
 //        var buffer = [UInt8](count: myData.length, repeatedValue: 0x00)
@@ -214,6 +240,15 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }else{
         myCentralManager.stopScan()   // stop scanning to save power
         printToMyTextView("stop scanning")
+        
+        // turn off timer
+            if (myTimer.valid){
+                myTimer.invalidate()
+                
+            }
+
+            myCentralManager.cancelPeripheralConnection(peripheralArray[0])
+            
         }
     }
     
@@ -223,5 +258,27 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         myTextView.text = passedString + "\r" + myTextView.text
     }
     
+
+//  Called by MyTimer()
+ func myTimer1Func(){
+    println("timer triggered")
+    self.peripheralArray[0].readRSSI()
+    
+    println("RSSI:  \(self.peripheralArray[0].RSSI) ")
+
 }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
