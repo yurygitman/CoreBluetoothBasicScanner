@@ -12,14 +12,27 @@ import CoreBluetooth
 
 class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
 
+    
+    
     let myCentralManager = CBCentralManager()
-    var myConnectedPeripheral = CBPeripheral()
+    var peripheralArray = [CBPeripheral]()
+    
+    
+    // create now empty array.
+    var  deviceArray = [String]()
+    
+    // create empty dictionary
+    var counter = 0  //dictionary Coutner
+    
+    
+    
     
     
     required init(coder aDecoder: NSCoder) {
         
         super.init(coder: aDecoder)
         myCentralManager = CBCentralManager(delegate: self, queue: dispatch_get_main_queue())
+
     }
     
     
@@ -88,21 +101,34 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
           printToMyTextView(" -- didDiscoverPeripheral -- ")
         
-//        printToMyTextView("Description: \(peripheral.description)")
         printToMyTextView("Name: \(peripheral.name)")
         printToMyTextView("RSSI: \(peripheral.RSSI)")
-        printToMyTextView("Services: \(peripheral.services)")
-        printToMyTextView("Description: \(peripheral.description)")
-        
+  //      printToMyTextView("Services: \(peripheral.services)")
+   //     printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
         printToMyTextView("\r")
-
+      
+        
+        if peripheral?.name == "RedDotBean"{  // Look for your device by Name
+              myCentralManager.stopScan()  // stop scanning to save power
+            peripheralArray.append(peripheral) // add found device to device array to keep a strong reverence to it.
+            
+            myCentralManager.connectPeripheral(peripheralArray[0], options: nil)  // connect to this found device
+            printToMyTextView("Attempting to Connect to \(peripheral.name)")
+         
+        }
+        
+        
     }
     
     
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
+        printToMyTextView("\r\r Did Connect to \(peripheral.name) \r\r")
+        peripheral.delegate = self
+        peripheral.discoverServices(nil)  // discover services
+        printToMyTextView("Scanning For Services")
         
-          printToMyTextView("didConnectPeripheral")
-        //
+        
+        
     }
     
     
@@ -110,34 +136,100 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 // Mark   CBPeriperhalManager
 
     func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
-        //
-          printToMyTextView("---didDiscoverServices---")
+        printToMyTextView("\r\r Discovered Servies for \(peripheral.name) \r\r")
         
-        printToMyTextView("Description: \(peripheral.description)")
-        printToMyTextView("Name: \(peripheral.name)")
-        printToMyTextView("RSSI: \(peripheral.RSSI)")
-        printToMyTextView("Services: \(peripheral.services)")
-        printToMyTextView("\r")
+        
+        
+        for service in peripheral.services as [CBService]{
+            println("Service: \(service)  Service.UUID \(service.UUID)  Service.UUID.UUIDString \(service.UUID.UUIDString) \r\r"  )
+            
+            printToMyTextView("\r Services: \(service.UUID.UUIDString) ")
+            
+            if service.UUID.UUIDString == "180F"{
+
+                printToMyTextView("------ FOUND BATT with service.UUID.UUIDString \r\r")
+
+
+                peripheral.discoverCharacteristics(nil, forService: service)
+    
+                
+            }
+
+    
+
+            
+        }
         
     }
     
   
     func peripheral(peripheral: CBPeripheral!, didDiscoverCharacteristicsForService service: CBService!, error: NSError!) {
         //
-          printToMyTextView("didDiscoverPeripheral")
+          println("didDiscoverCharacteristicsForService")
+        
+        printToMyTextView("DidDiscoverCharacteristicsForService:  Service.UUID \(service.UUID)  Service.UUID.UUIDString \(service.UUID.UUIDString) \r\r"  )
+
+        
+        
+        for characteristic in service.characteristics as [CBCharacteristic]{
+            println("Reading Characteristic: \(characteristic)\r")
+            
+            printToMyTextView("Reading Characteristic Value: \(characteristic.value)\r")
+       
+            peripheral.readValueForCharacteristic(characteristic)
+            peripheral.readRSSI()
+        }
+
+        
 
     }
   
     func peripheral(peripheral: CBPeripheral!, didReadRSSI RSSI: NSNumber!, error: NSError!) {
         //code
-          printToMyTextView("didDiscoverCharacteristicsForService")
+        printToMyTextView("\r didReadRSSI: \(RSSI)\r")
     
+        
     }
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         //
-          printToMyTextView("didUpdateValueForCharacteristic")
+        
+        
+        let convertedReading = "\u{2B}"
+        println("converted reading:\(convertedReading)")
+        
+        
+        println("2  Reading Characteristic: \(characteristic)\r")
 
+        printToMyTextView("2  Reading Characteristic Value: \(characteristic.value)\r")
+        println("2  Reading Characteristic Property: \(characteristic.properties)\r")
+
+        
+        var myData = NSData()
+
+        myData = characteristic.value
+
+        println("MyData: \(myData)\r")
+
+        var buffer = [UInt8](count: myData.length, repeatedValue: 0x00)
+        myData.getBytes(&buffer, length: buffer.count)
+
+        var reading:UInt16?
+        if (buffer.count >= myData.length){
+            if (buffer[0] & 0x01 == 0){
+                reading = UInt16(buffer[1]);
+            
+            }
+        } else {
+        
+        if let actualReading = reading{
+            println("Actual Reading \(actualReading)")
+        } else  {
+            println("reading \(reading)")
+        }
+        
+           
+        }
     }
     
     
@@ -155,6 +247,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }else{
         myCentralManager.stopScan()
         printToMyTextView("stop scanning")
+        
             
         }
     }
