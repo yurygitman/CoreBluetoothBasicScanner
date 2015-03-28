@@ -20,10 +20,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     let myCentralManager = CBCentralManager()
     var peripheralArray = [CBPeripheral]() // create now empty array.
     
-    // Adds in Progress View Stuff
- //   var myTimer = NSTimer()
-    
-    
+
     // Put CentralManager in the main queue
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -121,10 +118,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         
       //  peripheralArray.append(peripheral)
 
-        
-        //  Start Timer for Signal Strength
-        myTimer = NSTimer.scheduledTimerWithTimeInterval(1.5, target: self, selector: Selector("myTimer1Func"), userInfo: nil, repeats: true)
-    }
+        }
 
     
     func centralManager(central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
@@ -206,15 +200,10 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }else{
         myCentralManager.stopScan()   // stop scanning to save power
         printToMyTextView("stop scanning")
-        
-        // turn off timer
-            if (myTimer.valid){
-                myTimer.invalidate()
-                
-            }
-
+     
+            if (peripheralArray.count > 0 ) {
             myCentralManager.cancelPeripheralConnection(peripheralArray[0])
-            
+            }
         }
     }
     
