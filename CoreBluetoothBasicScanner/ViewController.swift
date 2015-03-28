@@ -19,11 +19,9 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     // BLE Stuff
     let myCentralManager = CBCentralManager()
     var peripheralArray = [CBPeripheral]() // create now empty array.
-    var myPeripheral = CBPeripheral()
-    var rssiFloat = 0.0
     
     // Adds in Progress View Stuff
-    var myTimer = NSTimer()
+ //   var myTimer = NSTimer()
     
     
     // Put CentralManager in the main queue
@@ -99,17 +97,15 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         printToMyTextView("Name: \(peripheral.name)")
         printToMyTextView("RSSI: \(peripheral.RSSI)")
-  //      printToMyTextView("Services: \(peripheral.services)")
-   //     printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
+        printToMyTextView("Services: \(peripheral.services)")
+        printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
         printToMyTextView("\r")
       
         
         if peripheral?.name == "RedDotBean"{  // Look for your device by Name
             myCentralManager.stopScan()  // stop scanning to save power
             peripheralArray.append(peripheral) // add found device to device array to keep a strong reverence to it.
-            
             myCentralManager.connectPeripheral(peripheralArray[0], options: nil)  // connect to this found device
-       //     myPeripheral = peripheral
             printToMyTextView("Attempting to Connect to \(peripheral.name)")
         }
     }
@@ -171,15 +167,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     func peripheral(peripheral: CBPeripheral!, didReadRSSI RSSI: NSNumber!, error: NSError!) {
     
         println("readRSSI")
-        
-        //  reads signal strenght
-    //    printToMyTextView("\r didReadRSSI: \(RSSI)\r")
-        
-   //     let cleanedProgValue = RSSI.floatValue  *  0.001  // converts -0 to -100 to
-        
-    //    printToMyTextView("RSSI: \(RSSI) cleanedProgValue: \(cleanedProgValue)")
-    
-    }
+            }
 
     func peripheralDidUpdateRSSI(peripheral: CBPeripheral!, error: NSError!) {
         println("didUpdateRSSI")
@@ -201,29 +189,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         println("MyData: \(myData)\r")
         printToMyTextView("MyData: \(myData)\r")
 
-    //    let cleanedProgValue = peripheral.RSSI.floatValue  *  0.001  // converts -0 to -100 to
-     //   progressViewRSSI.progress = cleanedProgValue
-        
-        //  Low-level parsing of data (currently not working)
-//        var buffer = [UInt8](count: myData.length, repeatedValue: 0x00)
-//        myData.getBytes(&buffer, length: buffer.count)
-//
-//        var reading:UInt16?
-//        if (buffer.count >= myData.length){
-//            if (buffer[0] & 0x01 == 0){
-//                reading = UInt16(buffer[1]);
-//            
-//            }
-//        } else {
-//        
-//        if let actualReading = reading{
-//            println("Actual Reading \(actualReading)")
-//        } else  {
-//            println("reading \(reading)")
-//        }
-//        
-//        
-//        }
+
     }
     
     
@@ -258,17 +224,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         myTextView.text = passedString + "\r" + myTextView.text
     }
     
-
-//  Called by MyTimer()
- func myTimer1Func(){
-    println("timer triggered")
-    self.peripheralArray[0].readRSSI()
-    
-    println("RSSI:  \(self.peripheralArray[0].RSSI) ")
-
-}
-
-
 }
 
 
