@@ -86,18 +86,37 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         
     }
     
-    
-    
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
 
-        printToMyTextView(" -- didDiscoverPeripheral -- ")
+//        printToMyTextView(" -- didDiscoverPeripheral -- ")
         
-        printToMyTextView("Name: \(peripheral.name)")
-        printToMyTextView("RSSI: \(peripheral.RSSI)")
-        printToMyTextView("Services: \(peripheral.services)")
-        printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
-        printToMyTextView("\r")
       
+//        if peripheral?.name != nil {  // Look for your device by Name
+//
+//            printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
+//            printToMyTextView("Services: \(peripheral.services)")
+//            printToMyTextView("RSSI: \(RSSI)")
+//            printToMyTextView("Name: \(peripheral.name)")
+//            println("Name: \(peripheral.name)")
+//            
+//            printToMyTextView("\r")
+//       
+//        }
+
+        if peripheral?.name != nil {  // Look for your device by Name
+            
+            printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
+            printToMyTextView("Services: \(peripheral.services)")
+            printToMyTextView("RSSI: \(RSSI)")
+            printToMyTextView("Name: \(peripheral.name)")
+            println("Name: \(peripheral.name)")
+            
+            printToMyTextView("\r")
+            
+        }
+
+        
+        
         
         if peripheral?.name == "RedDotBean"{  // Look for your device by Name
             myCentralManager.stopScan()  // stop scanning to save power
@@ -107,6 +126,9 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
+    func peripheralDidUpdateName(peripheral: CBPeripheral!) {
+        printToMyTextView("** peripheralDidUpdateName **")
+    }
     
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
         printToMyTextView("\r\r Did Connect to \(peripheral.name) \r\r")
@@ -119,7 +141,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
       //  peripheralArray.append(peripheral)
 
         }
-
     
     func centralManager(central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
         labelConnectedDevice.text = ""
@@ -195,7 +216,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         if sender.on{
 
         myCentralManager.scanForPeripheralsWithServices(nil, options: nil )   // call to scan for services
-        printToMyTextView("scanning for Peripherals")
+        printToMyTextView("\r scanning for Peripherals")
           
         }else{
         myCentralManager.stopScan()   // stop scanning to save power
