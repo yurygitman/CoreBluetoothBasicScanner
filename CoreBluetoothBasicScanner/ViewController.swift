@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 yuryg. All rights reserved.
 //
 
+// Clean and upload
+
+
 import UIKit
 import CoreBluetooth
 
@@ -14,7 +17,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
     // UI Stuff
     @IBOutlet weak var progressViewRSSI: UIProgressView!
-    @IBOutlet weak var labelConnectedDevice: UILabel!
+    @IBOutlet weak var labelStatus: UILabel!
 
     // BLE Stuff
     let myCentralManager = CBCentralManager()
@@ -47,7 +50,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     func centralManagerDidUpdateState(central: CBCentralManager!) {
         
-        printToMyTextView("centralManagerDidUpdateState")
+        updateStatusLabel("centralManagerDidUpdateState")
        
         /*
         typedef enum {
@@ -61,26 +64,26 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
      */
         switch central.state{
         case .PoweredOn:
-            println("poweredOn")
+            updateStatusLabel("poweredOn")
             
             
         case .PoweredOff:
-            printToMyTextView("Central State PoweredOFF")
+            updateStatusLabel("Central State PoweredOFF")
 
         case .Resetting:
-            printToMyTextView("Central State Resetting")
+            updateStatusLabel("Central State Resetting")
 
         case .Unauthorized:
-            printToMyTextView("Central State Unauthorized")
+            updateStatusLabel("Central State Unauthorized")
         
         case .Unknown:
-            printToMyTextView("Central State Unknown")
+            updateStatusLabel("Central State Unknown")
             
         case .Unsupported:
-            printToMyTextView("Central State Unsupported")
+            updateStatusLabel("Central State Unsupported")
             
         default:
-            printToMyTextView("Central State None Of The Above")
+            updateStatusLabel("Central State None Of The Above")
             
         }
         
@@ -88,7 +91,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
 
-//        printToMyTextView(" -- didDiscoverPeripheral -- ")
+        updateStatusLabel(" - didDiscoverPeripheral - ")
         
       
 //        if peripheral?.name != nil {  // Look for your device by Name
@@ -103,26 +106,40 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 //       
 //        }
 
-        if peripheral?.name != nil {  // Look for your device by Name
+//        if RSSI.intValue > -100 ||
+        if   peripheral?.name != nil {  // Look for your device by Name
             
-            printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
-            printToMyTextView("Services: \(peripheral.services)")
+//            printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
+            printToMyTextView("Services: \(advertisementData)")
             printToMyTextView("RSSI: \(RSSI)")
             printToMyTextView("Name: \(peripheral.name)")
+            
             println("Name: \(peripheral.name)")
+            println("Services: \(advertisementData)")
+            println("RSSI: \(RSSI)")
             
             printToMyTextView("\r")
+            println("\r")
             
         }
 
         
+//        if peripheral?.name == "RedYoda"{  // Look for your device by Name
         
-        
-        if peripheral?.name == "RedDotBean"{  // Look for your device by Name
+        if (advertisementData[CBAdvertisementDataLocalNameKey] != nil) {
             myCentralManager.stopScan()  // stop scanning to save power
+           updateStatusLabel("myCentralManager.stopScan()")
+            
             peripheralArray.append(peripheral) // add found device to device array to keep a strong reverence to it.
+            updateStatusLabel("peripheralArray.append(peripheral)")
+
+            
             myCentralManager.connectPeripheral(peripheralArray[0], options: nil)  // connect to this found device
-            printToMyTextView("Attempting to Connect to \(peripheral.name)")
+            updateStatusLabel("myCentralManager.connectPeripheral(peripheralArray[0]")
+
+            updateStatusLabel("Attempting to Connect to \(peripheral.name)  \r")
+            printToMyTextView("Attempting to Connect to \(peripheral.name)  \r")
+            
         }
     }
     
@@ -136,19 +153,20 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         peripheral.discoverServices(nil)  // discover services
         printToMyTextView("Scanning For Services")
 
-        labelConnectedDevice.text = peripheral.name
+        labelStatus.text = peripheral.name
         
       //  peripheralArray.append(peripheral)
 
         }
     
     func centralManager(central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
-        labelConnectedDevice.text = ""
+        labelStatus.text = "didDisconnectPeripheral"
     }
     
 // Mark   CBPeriperhalManager
 
     func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
+       updateStatusLabel("\r\r Discovered Servies for \(peripheral.name) \r\r")
         printToMyTextView("\r\r Discovered Servies for \(peripheral.name) \r\r")
         
         for service in peripheral.services as [CBService]{
@@ -232,6 +250,10 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     func printToMyTextView(passedString: String){
         myTextView.text = passedString + "\r" + myTextView.text
+    }
+
+    func updateStatusLabel(passedString: String){
+        labelStatus.text = passedString
     }
     
 }
