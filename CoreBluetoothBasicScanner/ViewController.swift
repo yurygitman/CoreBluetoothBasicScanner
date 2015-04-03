@@ -93,19 +93,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
         updateStatusLabel(" - didDiscoverPeripheral - ")
         
-      
-//        if peripheral?.name != nil {  // Look for your device by Name
-//
-//            printToMyTextView("Description: \(peripheral.identifier.UUIDString)")
-//            printToMyTextView("Services: \(peripheral.services)")
-//            printToMyTextView("RSSI: \(RSSI)")
-//            printToMyTextView("Name: \(peripheral.name)")
-//            println("Name: \(peripheral.name)")
-//            
-//            printToMyTextView("\r")
-//       
-//        }
-
 //        if RSSI.intValue > -100 ||
         if   peripheral?.name != nil {  // Look for your device by Name
             
@@ -128,7 +115,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         if (advertisementData[CBAdvertisementDataLocalNameKey] != nil) {
             myCentralManager.stopScan()  // stop scanning to save power
-           updateStatusLabel("myCentralManager.stopScan()")
+           println("myCentralManager.stopScan()")
             
             peripheralArray.append(peripheral) // add found device to device array to keep a strong reverence to it.
             updateStatusLabel("peripheralArray.append(peripheral)")
