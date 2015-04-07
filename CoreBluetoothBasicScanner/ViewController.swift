@@ -18,6 +18,8 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     // UI Stuff
     @IBOutlet weak var progressViewRSSI: UIProgressView!
     @IBOutlet weak var labelStatus: UILabel!
+    @IBOutlet weak var myTextView: UITextView!
+
 
     // BLE Stuff
     let myCentralManager = CBCentralManager()
@@ -31,11 +33,27 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
     }
     
+    // Color Code
+    
+    
+    var myBlueColor = UIColor(red: 0.0, green: 0.5, blue: 0.75, alpha: 1)
+    var myBeigeDark = UIColor(red: 0.8, green: 0.6, blue: 0.33, alpha: 1)
+    var myBeigeLight = UIColor(red: 0.92, green: 0.78, blue: 0.63, alpha: 1)
+    var myBlackColor = UIColor(red: 0.12, green: 0.15, blue: 0.16, alpha: 1)
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        // Setup color code
+        view.backgroundColor = myBlueColor
+        myTextView.textColor = myBeigeLight
+        labelStatus.textColor = myBeigeLight
+        
+        myTextView.backgroundColor = myBlackColor
+        labelStatus.backgroundColor = myBlackColor
     
     }
     
@@ -215,7 +233,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
 //  Mark UI Stuff
     
-    @IBOutlet weak var myTextView: UITextView!
     
     @IBAction func scanSwitch(sender: UISwitch) {
         if sender.on{
